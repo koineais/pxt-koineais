@@ -1,4 +1,4 @@
-//% color="#006699" weight=100 icon="\uf042" // カテゴリの色とアイコンを設定
+//% color="#006699" weight=100 icon="\uf042"
 namespace funUtilities {
     /**
      * micro:bitのLED全体で簡単なアニメーションを表示します。
@@ -31,7 +31,7 @@ namespace funUtilities {
      */
     //% block="flash LEDs %times times"
     //% blockId="fun_utils_flash"
-    //% times.min=1 times.max=10 // 入力できる値の範囲を指定
+    //% times.min=1 times.max=10
     export function flashLeds(times: number): void {
         for (let i = 0; i < times; i++) {
             basic.showIcon(IconNames.Heart);
