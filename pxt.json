@@ -1,7 +1,7 @@
 {
     "name": "Fun Utilities",
     "namespace": "funUtilities",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "LED animation extension for micro:bit",
     "files": [
         "main.ts",
@@ -10,5 +10,7 @@
     "dependencies": {
         "core": "*"
     },
-    "license": "MIT"
+    "license": "MIT",
+    "public": true,
+    "target": "microbit"
 }

@@ -14,7 +14,8 @@ micro:bitのLED画面で楽しいアニメーション機能を提供するMakeC
 
 ## 使い方
 
-MakeCode EditorでこのURLから拡張機能を追加してください:
+MakeCode EditorでこのURLから拡張機能を追加してください（最新のタグが必要な場合があります）:
+
 ```
 https://github.com/koineais/pxt-koineais
 ```
