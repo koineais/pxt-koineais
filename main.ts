@@ -30,55 +30,74 @@ namespace funUtilities {
         }
     }
 
-    // --- リアルタイム時計機能 ---
-    let __clockOffsetSeconds = 0
-    let __clockRunning = false
+    // --- タイマー機能 ---
+    let __timerDurationSeconds = 60
+    let __timerRemainingSeconds = 0
+    let __timerRunning = false
 
     /**
-     * 時計の現在時刻を設定します（micro:bit起動からのオフセットを計算します）。
-     * @param hours 時（0-23）
+     * タイマーの時間を設定します。
      * @param minutes 分（0-59）
+     * @param seconds 秒（0-59）
      */
-    //% block="set clock to %hours : %minutes"
-    //% blockId="fun_utils_setclock"
-    //% hours.min=0 hours.max=23
+    //% block="set timer to %minutes minutes %seconds seconds"
+    //% blockId="fun_utils_settimer"
     //% minutes.min=0 minutes.max=59
-    export function setClock(hours: number, minutes: number): void {
-        const nowSec = Math.floor(input.runningTime() / 1000)
-        __clockOffsetSeconds = hours * 3600 + minutes * 60 - nowSec
+    //% seconds.min=0 seconds.max=59
+    export function setTimerDuration(minutes: number, seconds: number): void {
+        __timerDurationSeconds = Math.max(0, minutes * 60 + seconds)
+        __timerRemainingSeconds = __timerDurationSeconds
     }
 
     /**
-     * 時計の表示を開始します（バックグラウンドで更新）。
+     * タイマーを開始します（カウントダウン表示）。
      */
-    //% block="start clock"
-    //% blockId="fun_utils_startclock"
-    export function startClock(): void {
-        if (__clockRunning) return
-        __clockRunning = true
+    //% block="start timer"
+    //% blockId="fun_utils_starttimer"
+    export function startTimer(): void {
+        if (__timerRunning) return
+        __timerRunning = true
+        if (__timerRemainingSeconds <= 0) __timerRemainingSeconds = __timerDurationSeconds
         control.inBackground(() => {
-            while (__clockRunning) {
-                const s = Math.floor(input.runningTime() / 1000 + __clockOffsetSeconds)
-                const hh = Math.floor(s / 3600) % 24
-                const mm = Math.floor(s / 60) % 60
-                const hhStr = hh < 10 ? "0" + hh : "" + hh
+            while (__timerRunning && __timerRemainingSeconds > 0) {
+                const mm = Math.floor(__timerRemainingSeconds / 60)
+                const ss = __timerRemainingSeconds % 60
                 const mmStr = mm < 10 ? "0" + mm : "" + mm
-                basic.showString(hhStr + ":" + mmStr)
-                // 次の分の開始まで待つ（経過秒に応じて調整）
-                const elapsedSec = s % 60
-                const waitMs = (60 - elapsedSec) * 1000
-                basic.pause(waitMs)
+                const ssStr = ss < 10 ? "0" + ss : "" + ss
+                basic.showString(mmStr + ":" + ssStr)
+                basic.pause(1000)
+                __timerRemainingSeconds--
             }
+            if (__timerRunning && __timerRemainingSeconds <= 0) {
+                // 終了通知（簡易）
+                for (let i = 0; i < 4; i++) {
+                    basic.showIcon(IconNames.Heart)
+                    music.playTone(440, 150)
+                    basic.pause(150)
+                    basic.clearScreen()
+                    basic.pause(150)
+                }
+            }
+            __timerRunning = false
         })
     }
 
     /**
-     * 時計の表示を停止します。
+     * タイマーを停止します。
      */
-    //% block="stop clock"
-    //% blockId="fun_utils_stopclock"
-    export function stopClock(): void {
-        __clockRunning = false
+    //% block="stop timer"
+    //% blockId="fun_utils_stoptimer"
+    export function stopTimer(): void {
+        __timerRunning = false
+    }
+
+    /**
+     * タイマーをリセットします（設定時間に戻す）。
+     */
+    //% block="reset timer"
+    //% blockId="fun_utils_resettimer"
+    export function resetTimer(): void {
+        __timerRemainingSeconds = __timerDurationSeconds
         basic.clearScreen()
     }
 }
