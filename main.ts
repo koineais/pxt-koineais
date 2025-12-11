@@ -101,3 +101,56 @@ namespace funUtilities {
         basic.clearScreen()
     }
 }
+
+// --- マイク（v2）によるピッチ検出 ---
+// 以下はアナログ読み取りによる簡易ゼロ交差法です。環境によってはピンや閾値の調整が必要です。
+
+/** マイクの周波数(Hz)を取得します。サンプリング時間はミリ秒で指定（例:200）。 */
+//% block="マイクの周波数を測定 %sampleMs ms"
+//% blockId="fun_utils_getPitchHz"
+//% sampleMs.min=50 sampleMs.max=2000
+export function getPitchHz(sampleMs: number): number {
+    if (sampleMs <= 0) sampleMs = 200
+    const end = control.micros() + sampleMs * 1000
+    let last = pins.analogReadPin(AnalogPin.P0)
+    const threshold = 512
+    let lastCross = 0
+    let periods: number[] = []
+    while (control.micros() < end) {
+        const v = pins.analogReadPin(AnalogPin.P0)
+        if (last < threshold && v >= threshold) {
+            const now = control.micros()
+            if (lastCross != 0) {
+                periods.push(now - lastCross)
+            }
+            lastCross = now
+        }
+        last = v
+    }
+    if (periods.length == 0) return 0
+    let sum = 0
+    for (let i = 0; i < periods.length; i++) sum += periods[i]
+    const avgMicros = sum / periods.length
+    if (avgMicros <= 0) return 0
+    const freq = 1000000 / avgMicros
+    return Math.floor(freq)
+}
+
+/** 周波数から音階（MIDI準拠のノート番号）を返します。検出できない場合は0を返します。 */
+//% block="マイクの音階番号を測定 %sampleMs ms"
+//% blockId="fun_utils_getNoteNumber"
+//% sampleMs.min=50 sampleMs.max=2000
+export function getNoteNumber(sampleMs: number): number {
+    const f = getPitchHz(sampleMs)
+    if (f <= 0) return 0
+    const note = 69 + 12 * (Math.log(f / 440) / Math.log(2))
+    return Math.round(note)
+}
+
+/** マイクの音量（MakeCodeの`input.soundLevel()`）を返します。 */
+//% block="マイクの音量を取得"
+//% blockId="fun_utils_getVolume"
+export function getVolume(): number {
+    return input.soundLevel()
+}
+
