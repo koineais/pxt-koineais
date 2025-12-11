@@ -12,12 +12,11 @@
         "main.ts"
     ],
     "testFiles": [],
-    "targetVersions": {
-        "target": "*",
+    "target": {
         "targetId": "microbit"
     },
     "supportedTargets": [
         "microbit"
     ],
-    "icon": "\uf042"
+    "preferredEditor": "blocksprj"
 }
