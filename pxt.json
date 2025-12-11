@@ -2,21 +2,13 @@
     "name": "Fun Utilities",
     "namespace": "funUtilities",
     "version": "1.0.0",
-    "description": "micro:bit用の楽しいLEDアニメーション拡張機能",
-    "license": "MIT",
+    "description": "LED animation extension for micro:bit",
+    "files": [
+        "main.ts",
+        "README.md"
+    ],
     "dependencies": {
         "core": "*"
     },
-    "files": [
-        "README.md",
-        "main.ts"
-    ],
-    "testFiles": [],
-    "target": {
-        "targetId": "microbit"
-    },
-    "supportedTargets": [
-        "microbit"
-    ],
-    "preferredEditor": "blocksprj"
+    "license": "MIT"
 }
